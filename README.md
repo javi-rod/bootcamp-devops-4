@@ -2,7 +2,7 @@
 
 ## Temario
 
-### 1. Fundamentos de Linux
+### 1. [Fundamentos de Linux](https://github.com/javi-rod/bootcamp-devops-4/tree/master/mod01_fundamentos_linux)
 
 ### 2. Contenedores Docker
 
