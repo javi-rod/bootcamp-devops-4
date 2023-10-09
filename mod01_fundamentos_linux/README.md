@@ -25,7 +25,7 @@ Y file2.txt debe permanecer vacío.
 Ejecutaremos todos los pasos en una única línea con los comandos siguientes.
 
 ```
-mkdir -p foo/dummy/ foo/empty && touch foo/dummy/file1.txt foo/dummy/file2.txt && echo 'Me encanta la bash!!' > foo/dummy/file1.txt
+ mkdir -p foo/dummy/ foo/empty && touch foo/dummy/file2.txt && echo 'Me encanta la bash!!' > foo/dummy/file1.txt
 ```
 
 Explicación:
@@ -66,15 +66,15 @@ Donde file1.txt y file2.txt deben contener el siguiente texto:
 
 `Me encanta la bash!!`
 
-Ejecutaremos el comando cp para copiar el contenido a file2.txt y después lo moveremos con el comando mv
+Ejecutaremos un cat al fichero1.txt y lo redireccionamos al fichero file2.txt para volcar el contenido a file2.txt y después lo moveremos con el comando mv
 
 ```
-   cp foo/dummy/file1.txt foo/dummy/file2.txt && mv foo/dummy/file2.txt foo/empty/
+   cat foo/dummy/file1.txt > foo/dummy/file2.txt && mv foo/dummy/file2.txt foo/empty/
 ```
 
 Se hace uso de && pero igualmente se puede hacer con ;
 
-Luego lanzamos un **tree** para verificar la jerarquía y por último un **cat** a los ficheros para ver que el contenido es el### mismo.
+Luego lanzamos un **tree** para verificar la jerarquía y por último un **cat** a los ficheros para ver que el contenido es el mismo.
 
 ![Ejecución comandos Ejercicio 2](./img/ej2_01.jpg)
 
@@ -84,22 +84,58 @@ Luego lanzamos un **tree** para verificar la jerarquía y por último un **cat**
 
 ```
 #!/bin/bash
-
+#
 # Ejercicio 3 Laboratorio Módulo1 Fundamentos Linux Bootcamp DevOps Lemoncode
 # Alumno: Javier Rodríguez
+#
 
-# Evaluar si se ha introducido un argumento para asignar un valor concreto a la variable texto
-if [ $# -eq 0 ];
-then
-    texto='Que me gusta la bash!!!!'
+# Controlar el número de parámetros
+if [ $# -gt 1 ]; then
+
+	echo "ERROR!!Se necesita un sólo parámetro!!"
+
 else
 
-        texto=$1
-fi
+	# Evaluar si se ha introducido un parámetro para asignar un valor concreto a la variable texto
+	if [ $# -eq 0 ]; then
 
-# Tras la evaluación, creamos directorios y subdirectorios, introducimos el valor de la variable texto en file1.txt, luego copiamos su contenido a file2.txt para terminar moviendo el fichero al directorio empty
-mkdir -p foo/dummy/ foo/empty && touch foo/dummy/file1.txt foo/dummy/file2.txt && echo "$texto" > foo/dummy/file1.txt && cp foo/dummy/file1.txt foo/dummy/file2.txt && mv foo/dummy/file2.txt foo/empty/
+		texto='Que me gusta la bash!!!!'
+
+	else
+
+        texto=$1
+
+	fi
+
+# Creamos directorio foo y subdirectorios dummy y empty
+mkdir -p foo/dummy/ foo/empty
+
+# Creamos los ficheros file1.txt y file2.txt
+touch foo/dummy/file1.txt foo/dummy/file2.txt
+
+# Hacemos un echo de la variable texto y lo redireccionamos a file1.txt
+echo "$texto" > foo/dummy/file1.txt
+
+# Ahora volcamos el contenido file1.txt a file2.txt
+cat foo/dummy/file1.txt > foo/dummy/file2.txt
+
+# Movemos file2
+mv foo/dummy/file2.txt foo/empty/
+
+fi
 ```
+
+A continuación un ejemplo de ejecución si no le pasamos un parámetro
+
+![Ejecución comandos Ejercicio 3 sin parametro](./img/ej3_01.jpg)
+
+Aquí tenemos un ejemplo de ejecución si le pasamos un parámetro
+
+![Ejecución comandos Ejercicio 3 con paramentro](./img/ej3_02.jpg)
+
+Por último que sucede si metemos más de un parámetro
+
+![Ejecución comandos Ejercicio 3 con paramentro](./img/ej3_03.jpg)
 
 #### 4. Crea un script de bash que descargue el contenido de una página web a un fichero y busque en dicho fichero una palabra dada como parámetro al invocar el script.
 
@@ -120,40 +156,48 @@ $ ejercicio4.sh patata
 
 ```
 #!/bin/bash
-
+#
 # Ejercicio 4 Laboratorio Módulo1 Fundamentos Linux Bootcamp DevOps Lemoncode
 # Alumno: Javier Rodríguez
+#
 
 # Constante URL
 url='https://lemoncode.net/'
 
-# Descarga de la web en un fichero de forma silenciosa
-curl -s $url -o web.html
+if [ $# -ne 1 ];then
 
-# Búsqueda silenciosa de la palabra pasada como parámetro
-grep -q "$1" web.html
-
-# Almacenamos el exit code del comando anterior que será evaluado a continuación, si es 0 la palabra no fue encontrada si es diferente es encontrada y buscaremos las ocurrencias y cual es la primera línea en la que aparece
-
-Cod_Salida=$?
-
-if [ $Cod_Salida -ne 0 ]; then
-
-        echo "NO se ha encontrado la palabra $1"
+	 echo "ERROR: Debe introducir una única palabra a buscar"
 
 else
 
-        ocurrencias=$(grep -o "$1" web.html | grep -c "$1")
-        echo "La palabra $1 aparece $ocurrencias veces"
+	# Descarga de la web en un fichero de forma silenciosa
+	curl -s $url -o web.html
 
-        num_linea=$(grep -m1 -n "$1" web.html | awk -F ":" '{print $1}')
-        echo "Aparece por primera vez en la línea $num_linea"
+	# Búsqueda silenciosa de la palabra pasada como parámetro
+	grep -q "$1"  web.html
 
+	# Almacenamos el exit code del comando anterior
+	# 0: palabra no encontrada
+	# Distinto de 0: palabra encontrada
+	Cod_Salida=$?
+
+	# Si no hay ocurrencias se muestra mensaje, si se encuentra la palabra se almacena el número de ocurrencias y la primera línea en la que aparece la palabra
+	if [ $Cod_Salida -ne 0 ]; then
+
+			echo "NO se ha encontrado la palabra $1"
+	else
+
+			ocurrencias=$(grep -o "$1" web.html | grep -c "$1")
+			echo "La palabra $1 aparece $ocurrencias veces"
+
+			num_linea=$(grep -m1 -n "$1" web.html | awk -F ":" '{print $1}')
+			echo "Aparece por primera vez en la línea $num_linea"
+	fi
 fi
 
 ```
 
-A continuación se muestra un ejemplo de ejecución de este ejercicio
+A continuación se muestra unos ejemplos de ejecución de este ejercicio
 
 ![Ejecución Ejercicio 4](./img/ej4_01.jpg)
 
