@@ -46,13 +46,13 @@ A continuación se describen los pasos seguidos para resolver el ejercicio
 
 `$ docker network create lemoncode-challenge`
 
-![Crear network](./img/create_network.jpg)
+![Crear network](/mod02_contenedores_docker/img/create_network.jpg)
 
 - CREAR VOLUMEN DATA
 
 `$ docker volume create data`
 
-![Crear volumen](./img/create_volumen.jpg)
+![Crear volumen](/mod02_contenedores_docker/img/create_volumen.jpg)
 
 - CREAR CONTENEDOR MONGO CON VOL Y RED CREADAS EN LOS PASOS ANTERIORES
 
@@ -62,51 +62,51 @@ A continuación se describen los pasos seguidos para resolver el ejercicio
 
 NOTA: El dockerfile está disponible en el directorio lemoncode-challenge > node-stack > backend
 
-![Dockerfile backend](./img/dockerfile_backend.jpg)
+![Dockerfile backend](/mod02_contenedores_docker/img/dockerfile_backend.jpg)
 
 - CREAR DOCKERIGNORE PARA BACKEND
 
-![dockerignore backend](./img/dockerignore_backend.jpg)
+![dockerignore backend](/mod02_contenedores_docker/img/dockerignore_backend.jpg)
 
 - CREAR DOCKERFILE FRONTEND
 
 NOTA: El dockerfile está disponible en el directorio lemoncode-challenge > node-stack > frontend
 
-![Dockerfile frontend](./img/dockerfile_frontend.jpg)
+![Dockerfile frontend](/mod02_contenedores_docker/img/dockerfile_frontend.jpg)
 
 - CREAR DOCKERIGNORE PARA FRONTEND
 
-![dockerignore frontend](./img/dockerignore_frontend.jpg)
+![dockerignore frontend](/mod02_contenedores_docker/img/dockerignore_frontend.jpg)
 
 - CREAR IMAGEN BACKEND
 
 `$ docker build -t backend .`
 
-![build backend](./img/build_backend.jpg)
+![build backend](/mod02_contenedores_docker/img/build_backend.jpg)
 
 - CREAR IMAGEN FRONTEND
 
 `$ docker build -t frontend .`
 
-![build frontend](./img/build_frontend.jpg)
+![build frontend](/mod02_contenedores_docker/img/build_frontend.jpg)
 
 - COMPROBAR QUE SE HAN CREADO IMAGENES
 
 `$ docker images`
 
-![docker images](./img/images.jpg)
+![docker images](/mod02_contenedores_docker/img/images.jpg)
 
 - CREAR CONTENEDOR BACKEND topics-api
 
 `$ docker run -d -e DATABASE_URL="mongodb://some-mongo:27017" --name  topics-api --network=lemoncode-challenge -p 5000:5000 backend`
 
-![contenedor backend](./img/contenedor_backend.jpg)
+![contenedor backend](/mod02_contenedores_docker/img/contenedor_backend.jpg)
 
 - CREAR CONTENEDOR FRONTEND topics accesible por el puerto 8080
 
 `$ docker run -d --name topics -p 8080:3000 -e API_URI=http://topics-api:5000/api/topics --network lemoncode-challenge frontend`
 
-![contenedor frontend](./img/contenedor_frontend.jpg)
+![contenedor frontend](/mod02_contenedores_docker/img/contenedor_frontend.jpg)
 
 - COMPROBAR QUE ESTÁ FUNCIONANDO
 
@@ -118,7 +118,7 @@ Desde el host, ejecutamos los curl siguientes para meter datos
 
 Ahora comprobamos que se ven en el navegador
 
-![localhost8080](./img/localhost_8080.jpg)
+![localhost8080](/mod02_contenedores_docker/img/localhost_8080.jpg)
 
 ## Ejercicio 2
 
@@ -130,21 +130,21 @@ Ahora que ya tienes la aplicación del ejercicio 1 dockerizada, utiliza Docker C
 
 NOTA: El docker-compose está disponible en el directorio lemoncode-challenge
 
-![docker-compose](./img/docker_compose.jpg)
+![docker-compose](/mod02_contenedores_docker/img/docker_compose.jpg)
 
 - EVANTAR ENTORNO
 
 `$ docker compose up`
 
-![docker-compose up](./img/docker_compose_up.jpg)
+![docker-compose up](/mod02_contenedores_docker/img/docker_compose_up.jpg)
 
 Comprobamos que se han levantado los contenedores
 
-![contenedores corriendo](./img/docker_ps_compose.jpg)
+![contenedores corriendo](/mod02_contenedores_docker/img/docker_ps_compose.jpg)
 
 Abrimos en un navegador localhost:8080
 
-![localhost8080](./img/localhost_8080_compose.jpg)
+![localhost8080](/mod02_contenedores_docker/img/localhost_8080_compose.jpg)
 
 Lanzamos los siguientes curl en nuestro host para cargar datos
 
@@ -154,7 +154,7 @@ Lanzamos los siguientes curl en nuestro host para cargar datos
 
 Refrescamos la página y vemos los datos.
 
-![localhost8080 con datos](./img/localhost_8080_compose_datos.jpg)
+![localhost8080 con datos](/mod02_contenedores_docker/img/localhost_8080_compose_datos.jpg)
 
 - PARAR ENTORNO
 
@@ -162,18 +162,18 @@ Refrescamos la página y vemos los datos.
 
 Ejecutamos también un docker ps -a para ver que se han parado
 
-![docker-compose down](./img/docker_compose_stop.jpg)
+![docker-compose down](/mod02_contenedores_docker/img/docker_compose_stop.jpg)
 
 - ELIMINAR CONTENEDORES PARADOS
 
 `$ docker compose rm`
 
-![docker compose rm](./img/docker_compose_rm.jpg)
+![docker compose rm](/mod02_contenedores_docker/img/docker_compose_rm.jpg)
 
 En el caso que los contenedores estuvieran corriendo y deseáramos pararlos y eliminarlos, ejecutaríamos el comando siguiente.
 
 `$ docker compose shutdown`
 
-![docker compose shutdown](./img/docker_compose_down.jpg)
+![docker compose shutdown](/mod02_contenedores_docker/img/docker_compose_down.jpg)
 
 Como se aprecia en la imagen no sólo se eliminan los contenedores, también se elimina la red.
