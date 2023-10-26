@@ -1,0 +1,39 @@
+version: "3.9"
+
+services:
+  mongodb:
+    image: mongo
+    volumes:
+      - db-data:/data/db
+    restart: always
+    ports:
+      - "27017:27017"
+    networks:
+      - lemoncode-challenge
+
+  backend:
+    image: backend
+    restart: always
+    environment:
+      DATABASE_URL: mongodb://mongodb:27017
+      DATABASE_NAME: TopicstoreDb
+    ports:
+      - "5000:5000"
+    networks:
+      - lemoncode-challenge
+
+  frontend:
+    image: frontend
+    restart: always
+    environment:
+      API_URI: http://backend:5000/api/topics
+    ports:
+      - "8080:3000"
+    networks:
+      - lemoncode-challenge
+
+volumes:
+  db-data:
+
+networks:
+  lemoncode-challenge:
