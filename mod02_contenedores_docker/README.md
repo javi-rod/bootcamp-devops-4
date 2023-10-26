@@ -132,7 +132,7 @@ NOTA: El docker-compose está disponible en el directorio lemoncode-challenge
 
 ![docker-compose](/mod02_contenedores_docker/img/docker_compose.jpg)
 
-- EVANTAR ENTORNO
+- LEVANTAR ENTORNO
 
 `$ docker compose up`
 
