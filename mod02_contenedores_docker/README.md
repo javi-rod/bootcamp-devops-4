@@ -56,7 +56,7 @@ A continuación se describen los pasos seguidos para resolver el ejercicio
 
 - CREAR CONTENEDOR MONGO CON VOL Y RED CREADAS EN LOS PASOS ANTERIORES
 
-`$ docker run -d --name some-mongo --mount source=data,target=/data/db --network=lemoncode-challenge -p 27017:27017 mongo`
+`$ docker run -d --name some-mongo --mount source=data,target=/data/db --network=lemoncode-challenge mongo`
 
 - CREAR DOCKERFILE BACKEND
 
@@ -98,7 +98,7 @@ NOTA: El dockerfile está disponible en el directorio lemoncode-challenge > node
 
 - CREAR CONTENEDOR BACKEND topics-api
 
-`$ docker run -d -e DATABASE_URL="mongodb://some-mongo:27017" --name  topics-api --network=lemoncode-challenge -p 5000:5000 backend`
+`$ docker run -d -e DATABASE_URL="mongodb://some-mongo:27017" --name  topics-api --network=lemoncode-challenge backend`
 
 ![contenedor backend](/mod02_contenedores_docker/img/contenedor_backend.jpg)
 
@@ -110,15 +110,22 @@ NOTA: El dockerfile está disponible en el directorio lemoncode-challenge > node
 
 - COMPROBAR QUE ESTÁ FUNCIONANDO
 
-Desde el host, ejecutamos los curl siguientes para meter datos
-
-`curl -d '{"Name":"Devops"}' -H "Content-Type: application/json" -X POST http://localhost:5000/api/topics`
-
-`curl -d '{"Name":"K8s"}' -H "Content-Type: application/json" -X POST http://localhost:5000/api/topics`
-
-Ahora comprobamos que se ven en el navegador
+Si abrimos el navegador web y ejecutamos http://localhost:8080 veremos que funciona pero no tenemos datos.
 
 ![localhost8080](/mod02_contenedores_docker/img/localhost_8080.jpg)
+
+Para añadir datos debemos hacer lo pasos siguientes:
+
+- Ejecutamos un `docker exec -it some-mongo bash` para abrir una shell en el contenedor de mongo
+- Ejecutamos la línea de comandos de mongo con `mongosh`
+- Ejecutamos un `use TopicstoreDb` para crear la base de datos
+- Ejecutamos un `db.Topics.insert ( {"_id": "$oid", "Name" : "Contenedores"} )` para añadir datos (esto crea automáticamente la colección Topics)
+
+![Insertar datos en mongo](/mod02_contenedores_docker/img/insert_data_mongo.jpg)
+
+Si ahora volvemos al navegador y refrescamos
+
+![localhost8080 con datos](/mod02_contenedores_docker/img/localhost_8080_data.jpg)
 
 ## Ejercicio 2
 
@@ -146,11 +153,14 @@ Abrimos en un navegador localhost:8080
 
 ![localhost8080](/mod02_contenedores_docker/img/localhost_8080_compose.jpg)
 
-Lanzamos los siguientes curl en nuestro host para cargar datos
+Ahora vamos a cargar datos para ello hacemos lo siguiente:
 
-`curl -d '{"Name":"Devops"}' -H "Content-Type: application/json" -X POST http://localhost:5000/api/topics`
+- Ejecutamos un `docker exec -it lemoncode-challenge-mongodb-1 bash` para abrir una shell en el contenedor de mongo
+- Ejecutamos la línea de comandos de mongo con `mongosh`
+- Ejecutamos un `use TopicstoreDb` para crear la base de datos
+- Ejecutamos un `db.Topics.insert ( {"_id": "$oid", "Name" : "Docker"} )` para añadir datos (esto crea automáticamente la colección Topics)
 
-`curl -d '{"Name":"K8s"}' -H "Content-Type: application/json" -X POST http://localhost:5000/api/topics`
+![Cargar Datos en Mongo](/mod02_contenedores_docker/img/insert_data_mongo_compose.jpg)
 
 Refrescamos la página y vemos los datos.
 
@@ -162,7 +172,7 @@ Refrescamos la página y vemos los datos.
 
 Ejecutamos también un docker ps -a para ver que se han parado
 
-![docker-compose down](/mod02_contenedores_docker/img/docker_compose_stop.jpg)
+![docker-compose stop](/mod02_contenedores_docker/img/docker_compose_stop.jpg)
 
 - ELIMINAR CONTENEDORES PARADOS
 
@@ -172,8 +182,22 @@ Ejecutamos también un docker ps -a para ver que se han parado
 
 En el caso que los contenedores estuvieran corriendo y deseáramos pararlos y eliminarlos, ejecutaríamos el comando siguiente.
 
-`$ docker compose shutdown`
+`$ docker compose down`
 
-![docker compose shutdown](/mod02_contenedores_docker/img/docker_compose_down.jpg)
+![docker compose down](/mod02_contenedores_docker/img/docker_compose_down.jpg)
 
 Como se aprecia en la imagen no sólo se eliminan los contenedores, también se elimina la red.
+
+Antes de finalizar, vamos a mejorar el docker-compose añadiendo el campo depends_on en el frontend y backend. Esta opción establece el orden de creación y eliminación como vamos a ver a continuación.
+
+![docker compose 2](/mod02_contenedores_docker/img/docker_compose2.jpg)
+
+Cuando ejecutamos `docker compose -f docker-compose-v2.yml up` para levantar el entorno, si comparamos con la salida del que se ejecuta en pasos anteriores, se aprecia como se crea primero el contenedor de mongo, luego el de backend y por último el de frontend, cración más lógica y no aleatoria gracias a la opción de depends_on. El frontend dependerá del backend y éste del mongo.
+
+![docker compose 2 up ](/mod02_contenedores_docker/img/docker_compose2_up.jpg)
+
+Ahora si eliminamos el entorno ejecutando `docker compose -f docker-compose-v2.yml down` veremos que el proceso es inverso, pimero se elimina el contenedor de frontend, luego el backend y por último el de mongo.
+
+![docker compose 2 down ](/mod02_contenedores_docker/img/docker_compose2_down.jpg)
+
+Por último aclarar que se usa la opción -f al ejecutar el docker-compose para indicar el fichero que debe usar.

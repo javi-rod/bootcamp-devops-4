@@ -17,6 +17,8 @@ services:
       DATABASE_NAME: TopicstoreDb
     networks:
       - lemoncode-challenge
+    depends_on:
+      - mongodb
 
   frontend:
     image: frontend
@@ -27,6 +29,8 @@ services:
       - "8080:3000"
     networks:
       - lemoncode-challenge
+    depends_on:
+      - backend
 
 volumes:
   data:
