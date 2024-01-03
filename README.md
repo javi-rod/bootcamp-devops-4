@@ -8,7 +8,7 @@
 
 ### 3. [Orquestación contenedores](https://github.com/javi-rod/bootcamp-devops-4/tree/master/mod03_kubernetes)
 
-### 4. CI/CD
+### 4. [CI/CD](https://github.com/javi-rod/bootcamp-devops-4/tree/master/mod04_ci_cd)
 
 ### 5. Cloud Web Services
 

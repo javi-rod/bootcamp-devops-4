@@ -1,0 +1,35 @@
+pipeline {
+    agent {
+        docker {
+            image 'gradle:6.9.4-jdk8'
+            args '-v /root/.gradle:/root/.gradle'
+        }
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/javi-rod/bootcamp-jenkins.git'
+            }
+        }
+
+        stage('Compile') {
+            steps {
+                sh '''
+                chmod +x /var/jenkins_home/workspace/ejercicio1_2/jenkins-resources/calculator/gradlew
+                cd /var/jenkins_home/workspace/ejercicio1_2/jenkins-resources/calculator/
+                ./gradlew compileJava
+                '''
+            }
+        }
+
+        stage('Unit Tests') {
+            steps {
+                sh '''
+                cd /var/jenkins_home/workspace/ejercicio1_2/jenkins-resources/calculator/
+                ./gradlew test
+                '''
+            }
+        }
+    }
+}

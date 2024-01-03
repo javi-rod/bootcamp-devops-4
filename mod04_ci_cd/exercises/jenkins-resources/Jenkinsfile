@@ -1,0 +1,34 @@
+pipeline {
+    agent any
+
+     tools {
+        jdk 'jdk-14.0.2'
+    }
+ 
+     stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/javi-rod/bootcamp-jenkins.git'
+            }
+        }
+
+        stage('Compile') {
+            steps {
+                sh '''
+                chmod +x /var/jenkins_home/workspace/ejercicio1_1/jenkins-resources/calculator/gradlew
+                cd /var/jenkins_home/workspace/ejercicio1_1/jenkins-resources/calculator/
+                ./gradlew compileJava
+                '''
+            }
+        }
+
+        stage('Unit Tests') {
+            steps {
+                sh '''
+                cd /var/jenkins_home/workspace/ejercicio1_1/jenkins-resources/calculator/
+                ./gradlew test
+                '''
+            }
+        }
+    }
+}
