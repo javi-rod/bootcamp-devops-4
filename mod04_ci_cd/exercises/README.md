@@ -20,7 +20,46 @@ Para ejecutar Jenkins en local y tener las dependencias necesarias disponibles p
 
 <span style="color:red"><strong><ins>NOTA</ins></strong></span>
 
-Gradle 6.6.1 no es compatible con OpenJDK 17 que es la versión de JAVA que viene en la imagen de JENKINS. Según compatibilidad de Gradle, la versión 6.6.1 se puede ejecutar con Java 8 a 14. Para usar OpenJDK 17, tendría que actualizar a Gradle 7.3 o superior en su lugar he configurado en JENKINS openjdk14 y lo he declarado en la pipeline.
+Gradle 6.6.1 no es compatible con OpenJDK 17 que es la versión de JAVA que viene en la imagen de JENKINS. Según compatibilidad de Gradle, la versión 6.6.1 se puede ejecutar con Java 8 a 14. Para usar OpenJDK 17, tendría que actualizar a Gradle 7.3 o superior en su lugar he configurado en JENKINS openjdk14 y lo he declarado en la pipeline en tools.
+
+La pipeline para este ejercicio es la siguiente:
+
+```groovy
+pipeline {
+    agent any
+
+     tools {
+        jdk 'jdk-14.0.2'
+    }
+
+     stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/javi-rod/bootcamp-jenkins.git'
+            }
+        }
+
+        stage('Compile') {
+            steps {
+                sh '''
+                chmod +x /var/jenkins_home/workspace/ejercicio1_1/jenkins-resources/calculator/gradlew
+                cd /var/jenkins_home/workspace/ejercicio1_1/jenkins-resources/calculator/
+                ./gradlew compileJava
+                '''
+            }
+        }
+
+        stage('Unit Tests') {
+            steps {
+                sh '''
+                cd /var/jenkins_home/workspace/ejercicio1_1/jenkins-resources/calculator/
+                ./gradlew test
+                '''
+            }
+        }
+    }
+}
+```
 
 ### 2. Modificar la pipeline para que utilice la imagen Docker de Gradle como build runner - OBLIGATORIO
 
@@ -31,6 +70,45 @@ Gradle 6.6.1 no es compatible con OpenJDK 17 que es la versión de JAVA que vien
 <span style="color:red"><strong><ins>NOTA</ins></strong></span>
 
 La imagen gradle:6.6.1-jre14-openj9 no se encontraba disponible por lo que se ha usado la gradle:6.9.4-jdk8
+
+La pipeline de este ejercicio es la siguiente
+
+````groovy
+pipeline {
+    agent {
+        docker {
+            image 'gradle:6.9.4-jdk8'
+            args '-v /root/.gradle:/root/.gradle'
+        }
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/javi-rod/bootcamp-jenkins.git'
+            }
+        }
+
+        stage('Compile') {
+            steps {
+                sh '''
+                chmod +x /var/jenkins_home/workspace/ejercicio1_2/jenkins-resources/calculator/gradlew
+                cd /var/jenkins_home/workspace/ejercicio1_2/jenkins-resources/calculator/
+                ./gradlew compileJava
+                '''
+            }
+        }
+
+        stage('Unit Tests') {
+            steps {
+                sh '''
+                cd /var/jenkins_home/workspace/ejercicio1_2/jenkins-resources/calculator/
+                ./gradlew test
+                '''
+            }
+        }
+    }
+}```
 
 ## Ejercicios GitLab (**NO REALIZADO**)
 
@@ -116,7 +194,7 @@ Crea un workflow que se lance de la manera que elijas y ejecute los tests e2e qu
 ```bash
 docker run -d -p 3001:3000 hangman-api
 docker run -d -p 8080:8080 -e API_URL=http://localhost:3001 hangman-front
-```
+````
 
 - Los tests se ejecutan desde el directorio `hangman-e2e/e2e` haciendo uso del comando `npm run open`
 
