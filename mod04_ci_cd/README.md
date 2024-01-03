@@ -22,7 +22,11 @@ Para ejecutar Jenkins en local y tener las dependencias necesarias disponibles p
 
 Gradle 6.6.1 no es compatible con OpenJDK 17 que es la versión de JAVA que viene en la imagen de JENKINS. Según compatibilidad de Gradle, la versión 6.6.1 se puede ejecutar con Java 8 a 14. Para usar OpenJDK 17, tendría que actualizar a Gradle 7.3 o superior en su lugar he configurado en JENKINS openjdk14 y lo he declarado en la pipeline en tools.
 
-La pipeline para este ejercicio es la siguiente:
+Para configurar OpenJDK 14 en Jenkins hay que ir a Panel de Control - Administrar Jenkins - Tools - Instalaciones de JDK y allí darle un nombre que usaremos en la pipiline así como el path de donde está ubicado.
+
+![Configurar JDK en Jenkins](/mod04_ci_cd/exercises/img/jdk_jenkins.png)
+
+La pipeline para este ejercicio quedaría así:
 
 ```groovy
 pipeline {
@@ -73,7 +77,7 @@ La imagen gradle:6.6.1-jre14-openj9 no se encontraba disponible por lo que se ha
 
 La pipeline de este ejercicio es la siguiente
 
-````groovy
+```groovy
 pipeline {
     agent {
         docker {
@@ -108,7 +112,8 @@ pipeline {
             }
         }
     }
-}```
+}
+```
 
 ## Ejercicios GitLab (**NO REALIZADO**)
 
@@ -194,7 +199,7 @@ Crea un workflow que se lance de la manera que elijas y ejecute los tests e2e qu
 ```bash
 docker run -d -p 3001:3000 hangman-api
 docker run -d -p 8080:8080 -e API_URL=http://localhost:3001 hangman-front
-````
+```
 
 - Los tests se ejecutan desde el directorio `hangman-e2e/e2e` haciendo uso del comando `npm run open`
 
